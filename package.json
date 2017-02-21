@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "version": "0.1.0",
+  "description": "Test Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.6.0",
+    "cognitive-services": "^0.1.0",
+    "restify": "^4.3.0"
+  }
+}
