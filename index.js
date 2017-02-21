@@ -18,6 +18,7 @@ var chatConnector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 var callConnector = new calling.CallConnector({
+    callbackUrl: 'https://da0b3a6e.ngrok.io/api/calls',
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
@@ -28,17 +29,43 @@ server.post('/api/messages', chatConnector.listen());
 server.post('/api/calls', callConnector.listen());
 
 //=========================================================
-// Bots Dialogs
+// Chat Dialogs
 //=========================================================
-
-// Add root dialog
-callingBot.dialog('/', function (session) {
-   session.send('Watson... come here!');
-});
 
 chatBot.dialog('/', function (session) {
    session.send('Chat...');
 });
+
+//=========================================================
+// Calling Dialogs
+//=========================================================
+
+// Add root dialog
+callingBot.dialog('/', [
+  function (session) {
+      calling.Prompts.choice(session, "Which department? Press 1 for support, 2 for billing, 3 for claims, or star to return to previous menu.", [
+          { name: 'support', dtmfVariation: '1', speechVariation: ['support', 'customer service'] },
+          { name: 'billing', dtmfVariation: '2', speechVariation: ['billing'] },
+          { name: 'claims', dtmfVariation: '3', speechVariation: ['claims'] },
+          { name: '(back)', dtmfVariation: '*', speechVariation: ['back', 'previous'] }
+      ]);
+  },
+  function (session, results) {
+      if (results.response !== '(back)') {
+          session.beginDialog('/' + results.response.entity + 'Menu');
+      } else {
+          session.endDialog();
+      }
+  },
+  function (session) {
+      // Loop menu
+      session.replaceDialog('/');
+  }
+]);
+
+callingBot.dialog('/claimsMenu', function (session) {
+    session.send("You selected claims.");
+})
 
 /*
 var intents = new builder.IntentDialog();
