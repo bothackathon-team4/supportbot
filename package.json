@@ -14,7 +14,10 @@
     "botbuilder-calling": "^3.0.1",
     "cognitive-services": "^0.1.0",
     "node-uuid": "^1.4.7",
+    "open": "0.0.5",
     "request": "^2.79.0",
-    "restify": "^4.3.0"
+    "request-promise": "^4.1.1",
+    "restify": "^4.3.0",
+    "swagger-client": "^2.1.32"
   }
 }
