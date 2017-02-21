@@ -46,6 +46,7 @@ chatBot.dialog('/', function (session) {
 // Add root dialog
 callingBot.dialog('/', [
   function (session) {
+    console.log("prompting user");
     calling.Prompts.record(session, "Hello, please tell us your name and id.", {
       recordingFormat: 'wav',
       playBeep: false,
@@ -55,6 +56,8 @@ callingBot.dialog('/', [
   function (session, result) {
     //console.log(result.response);
     //called...{ recordedAudio: <Buffer 52 ... >, lengthOfRecordingInSecs: 7.2459999999999996 }
+
+    console.log("received user response (audio)");
 
     // FIXME: convert buffer to stream in a sane way
     var fs = require('fs');
@@ -66,14 +69,18 @@ callingBot.dialog('/', [
     var stream = fs.createReadStream("/tmp/braindead.wav")
 
     speechService.getTextFromAudioStream(stream).then(text => {
-      console.log(text);
+      console.log("received text: " + text);
 
       botclient.startConversation((conversationId) => {
+        console.log("started converstion " + conversationId)
         botclient.sendActivity(conversationId, text);
+        console.log("text was sent to chat bot - waiting for reply");
 
         var watermark
         setTimeout(() => {
+          console.log("polling activities");
           botclient.pollActivities(conversationId, (activity) => {
+            console.log("got activity: " + activity.text);
             session.send(
               new calling.PlayPromptAction(session)
               .prompts([
