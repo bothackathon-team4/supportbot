@@ -20,7 +20,7 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 //});
 var callConnector = new calling.CallConnector({
 //    callbackUrl: 'https://da0b3a6e.ngrok.io/api/calls',
-    callbackUrl: 'https://blogtest.apps.redcube.de/api/calls',
+    callbackUrl: 'https://9f2d32e7.ngrok.io/api/calls',
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
@@ -45,10 +45,10 @@ server.post('/api/calls', callConnector.listen());
 // Add root dialog
 callingBot.dialog('/', [
   function (session) {
-    calling.Prompts.record(session, "Please leave a message after the beep.", {
+    calling.Prompts.record(session, "Hello, please tell us your name and id.", {
       recordingFormat: 'wav',
       playBeep: false,
-      maxSilenceTimeoutInSeconds: 3
+      maxSilenceTimeoutInSeconds: 1
     });
   },
   function (session, result) {
@@ -68,6 +68,14 @@ callingBot.dialog('/', [
 
     speechService.getTextFromAudioStream(stream).then(text => {
       console.log(text);
+      session.send(
+        new calling.PlayPromptAction(session)
+        .prompts([
+          new calling.Prompt(session)
+            .value(text)
+            .culture("de-DE")
+        ])
+      );
     }).catch(error => {
       console.log(error);
     })
