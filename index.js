@@ -20,7 +20,7 @@ var chatConnector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 var callConnector = new calling.CallConnector({
-    callbackUrl: process.env.CALLBACK_URL,,
+    callbackUrl: process.env.CALLBACK_URL,
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
