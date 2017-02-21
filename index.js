@@ -23,8 +23,8 @@ var callConnector = new builder.CallConnector({
 });
 
 var bot = new builder.UniversalBot(connector);
-server.post('/api/messages', connector.listen());
-server.post('/api/calls', connector.listen());
+server.post('/api/messages', chatConnector.listen());
+server.post('/api/calls', callConnector.listen());
 
 //=========================================================
 // Bots Dialogs
