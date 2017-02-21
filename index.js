@@ -83,7 +83,7 @@ callingBot.dialog('/', [
               ])
             );
           }, watermark)
-        }, 10000);
+        }, 3000);
 
       });
     }).catch(error => {
