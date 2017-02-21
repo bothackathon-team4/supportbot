@@ -1,7 +1,8 @@
-//var builder = require('botbuilder');
+var builder = require('botbuilder');
 var calling = require('botbuilder-calling');
 var restify = require('restify');
 var speechService = require('./bingspeech.js');
+var botclient = require('./botclient.js');
 
 //=========================================================
 // Bot Setup
@@ -14,29 +15,29 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 
 // Create chat bot
-//var chatConnector = new builder.ChatConnector({
-//    appId: process.env.MICROSOFT_APP_ID,
-//    appPassword: process.env.MICROSOFT_APP_PASSWORD
-//});
+var chatConnector = new builder.ChatConnector({
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
+});
 var callConnector = new calling.CallConnector({
-//    callbackUrl: 'https://da0b3a6e.ngrok.io/api/calls',
     callbackUrl: 'https://9f2d32e7.ngrok.io/api/calls',
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
 var callingBot = new calling.UniversalCallBot(callConnector);
-//var chatBot = new builder.UniversalBot(chatConnector);
-//server.post('/api/messages', chatConnector.listen());
+var chatBot = new builder.UniversalBot(chatConnector);
+server.post('/api/messages', chatConnector.listen());
 server.post('/api/calls', callConnector.listen());
 
 //=========================================================
 // Chat Dialogs
 //=========================================================
 
-//chatBot.dialog('/', function (session) {
-//   session.send('Chat...');
-//});
+chatBot.dialog('/', function (session) {
+  console.log("sending chat message");
+  session.send('Chat...');
+});
 
 //=========================================================
 // Calling Dialogs
@@ -55,8 +56,6 @@ callingBot.dialog('/', [
     //console.log(result.response);
     //called...{ recordedAudio: <Buffer 52 ... >, lengthOfRecordingInSecs: 7.2459999999999996 }
 
-    console.log("got result");
-
     // FIXME: convert buffer to stream in a sane way
     var fs = require('fs');
     fs.writeFile("/tmp/braindead.wav", result.response.recordedAudio, function(err) {
@@ -68,6 +67,27 @@ callingBot.dialog('/', [
 
     speechService.getTextFromAudioStream(stream).then(text => {
       console.log(text);
+
+      botclient.startConversation((conversationId) => {
+        botclient.sendActivity(conversationId, text);
+
+        var watermark
+        setTimeout(() => {
+          botclient.pollActivities(conversationId, (activity) => {
+            session.send(
+              new calling.PlayPromptAction(session)
+              .prompts([
+                new calling.Prompt(session)
+                  .value(activity.text)
+                  .culture("de-DE")
+              ])
+            );
+          }, watermark)
+        }, 10000);
+
+      })
+
+      /*
       session.send(
         new calling.PlayPromptAction(session)
         .prompts([
@@ -75,7 +95,7 @@ callingBot.dialog('/', [
             .value(text)
             .culture("de-DE")
         ])
-      );
+      );*/
     }).catch(error => {
       console.log(error);
     })
