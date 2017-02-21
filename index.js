@@ -17,18 +17,28 @@ var chatConnector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
-var callConnector = new builder.CallConnector({
+var callConnector = new calling.CallConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
-var bot = new builder.UniversalBot(connector);
+var callingBot = new calling.UniversalCallBot(callConnector);
+var chatBot = new builder.UniversalBot(chatConnector);
 server.post('/api/messages', chatConnector.listen());
 server.post('/api/calls', callConnector.listen());
 
 //=========================================================
 // Bots Dialogs
 //=========================================================
+
+// Add root dialog
+callingBot.dialog('/', function (session) {
+   session.send('Watson... come here!');
+});
+
+chatBot.dialog('/', function (session) {
+   session.send('Chat...');
+});
 
 /*
 var intents = new builder.IntentDialog();
