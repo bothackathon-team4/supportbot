@@ -13,6 +13,8 @@
     "botbuilder": "^3.6.0",
     "botbuilder-calling": "^3.0.1",
     "cognitive-services": "^0.1.0",
+    "node-uuid": "^1.4.7",
+    "request": "^2.79.0",
     "restify": "^4.3.0"
   }
 }
