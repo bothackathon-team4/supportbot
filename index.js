@@ -1,4 +1,5 @@
 var builder = require('botbuilder');
+var calling = require('botbuilder-calling');
 var restify = require('restify');
 
 //=========================================================
@@ -8,21 +9,28 @@ var restify = require('restify');
 // Setup Restify Server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
+   console.log('%s listening to %s', server.name, server.url);
 });
-  
+
 // Create chat bot
-var connector = new builder.ChatConnector({
+var chatConnector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
+var callConnector = new builder.CallConnector({
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
+});
+
 var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
+server.post('/api/calls', connector.listen());
 
 //=========================================================
 // Bots Dialogs
 //=========================================================
 
+/*
 var intents = new builder.IntentDialog();
 bot.dialog('/', intents);
 
@@ -56,4 +64,5 @@ bot.dialog('/profile', [
         session.userData.name = results.response;
         session.endDialog();
     }
-]);
+])
+*/;

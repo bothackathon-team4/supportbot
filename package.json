@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.6.0",
+    "botbuilder-calling": "^3.0.1",
     "cognitive-services": "^0.1.0",
     "restify": "^4.3.0"
   }
