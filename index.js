@@ -2,7 +2,6 @@
 var calling = require('botbuilder-calling');
 var restify = require('restify');
 var speechService = require('./bingspeech.js');
-var streamify = require('streamify');
 
 //=========================================================
 // Bot Setup
