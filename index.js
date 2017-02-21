@@ -85,17 +85,7 @@ callingBot.dialog('/', [
           }, watermark)
         }, 10000);
 
-      })
-
-      /*
-      session.send(
-        new calling.PlayPromptAction(session)
-        .prompts([
-          new calling.Prompt(session)
-            .value(text)
-            .culture("de-DE")
-        ])
-      );*/
+      });
     }).catch(error => {
       console.log(error);
     })
