@@ -19,7 +19,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 //    appPassword: process.env.MICROSOFT_APP_PASSWORD
 //});
 var callConnector = new calling.CallConnector({
-    callbackUrl: 'https://da0b3a6e.ngrok.io/api/calls',
+//    callbackUrl: 'https://da0b3a6e.ngrok.io/api/calls',
+    callbackUrl: 'https://blogtest.apps.redcube.de/api/calls',
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
