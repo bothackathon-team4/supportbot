@@ -77,7 +77,7 @@ callingBot.dialog('/', [
         console.log("text was sent to chat bot - waiting for reply");
 
         var watermark
-        setTimeout(() => {
+        timer = setInterval(() => {
           console.log("polling activities");
           botclient.pollActivities(conversationId, (activity) => {
             console.log("got activity: " + activity.text);
@@ -89,8 +89,9 @@ callingBot.dialog('/', [
                   .culture("de-DE")
               ])
             );
+            clearInterval(timer);
           }, watermark)
-        }, 3000);
+        }, 250);
 
       });
     }).catch(error => {
