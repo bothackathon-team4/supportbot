@@ -104,7 +104,7 @@ callingBot.dialog("mainLoop", [
           clearInterval(timer);
           next();
         })
-      }, 250);
+      }, 1000);
 
       setTimeout(function() { clearInterval(timer); }, 8000);
     }).catch(error => {
