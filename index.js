@@ -96,8 +96,11 @@ callingBot.dialog("mainLoop", [
       var watermark
       timer = setInterval(() => {
         console.log("polling activities");
+
         botclient.pollActivities(conversationId, (activity) => {
           console.log("got activity: " + activity.text);
+          question = activity.text
+/*
           session.send(
             new calling.PlayPromptAction(session)
             .prompts([
@@ -106,8 +109,11 @@ callingBot.dialog("mainLoop", [
                 .culture("de-DE")
             ])
           );
+*/
           clearInterval(timer);
         }, watermark)
+
+        session.replaceDialog("mainLoop")
       }, 500);
 
     }).catch(error => {
