@@ -106,7 +106,7 @@ callingBot.dialog("mainLoop", [
         })
       }, 250);
 
-      setTimeout(8000, function() { clearInterval(timer); });
+      setTimeout(function() { clearInterval(timer); }, 8000);
     }).catch(error => {
       console.log(error);
     })
