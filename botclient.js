@@ -52,9 +52,11 @@ var watermark = null
 
 exports.pollActivities = (conversationId, action) => {
   directLineClient.then((client) => {
+    //console.log("using watermark: " + watermark);
     client.Conversations.Conversations_GetActivities({ conversationId: conversationId, watermark: watermark })
               .then((response) => {
                   watermark = response.obj.watermark;                                 // use watermark so subsequent requests skip old messages
+                  //console.log("got new watermark: " + watermark);
                   return response.obj.activities;
               })
               .then((activities) => {
@@ -62,6 +64,7 @@ exports.pollActivities = (conversationId, action) => {
                     // ignore own messages
                     activities = activities.filter((m) => m.from.id !== DIRECTLINE_CLIENT);
 
+                    console.log(activities);
                     if (activities.length) {
                         // call action on last activity
                         action(activities[activities.length - 1]);
