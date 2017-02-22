@@ -43,11 +43,27 @@ chatBot.dialog('/', function (session) {
 // Calling Dialogs
 //=========================================================
 
+// dirty hack (we are not stateless anymore! we need to save the conversationId
+// in the session - but this doesn't work right now...)
+var conversationIdGlobal = null
+var question = null
+
 // Add root dialog
 callingBot.dialog('/', [
   function (session) {
-    console.log("prompting user");
-    calling.Prompts.record(session, "Hello, please tell us your name and id.", {
+    question = "Hello, please tell us your name and id."
+    botclient.startConversation((conversationId) => {
+      console.log("started converstion " + conversationId)
+      conversationIdGlobal = conversationId
+    });
+    session.beginDialog("mainLoop")
+  }
+]);
+
+callingBot.dialog("mainLoop", [
+  function (session) {
+    console.log("prompting user: " + question);
+    calling.Prompts.record(session, question, {
       recordingFormat: 'wav',
       playBeep: false,
       maxSilenceTimeoutInSeconds: 1
@@ -56,6 +72,9 @@ callingBot.dialog('/', [
   function (session, result) {
     //console.log(result.response);
     //called...{ recordedAudio: <Buffer 52 ... >, lengthOfRecordingInSecs: 7.2459999999999996 }
+
+    console.log("conversationId read: " + conversationIdGlobal);
+    conversationId = conversationIdGlobal
 
     console.log("received user response (audio)");
 
@@ -71,29 +90,26 @@ callingBot.dialog('/', [
     speechService.getTextFromAudioStream(stream).then(text => {
       console.log("received text: " + text);
 
-      botclient.startConversation((conversationId) => {
-        console.log("started converstion " + conversationId)
-        botclient.sendActivity(conversationId, text);
-        console.log("text was sent to chat bot - waiting for reply");
+      botclient.sendActivity(conversationId, text);
+      console.log("text was sent to chat bot - waiting for reply");
 
-        var watermark
-        timer = setInterval(() => {
-          console.log("polling activities");
-          botclient.pollActivities(conversationId, (activity) => {
-            console.log("got activity: " + activity.text);
-            session.send(
-              new calling.PlayPromptAction(session)
-              .prompts([
-                new calling.Prompt(session)
-                  .value(activity.text)
-                  .culture("de-DE")
-              ])
-            );
-            clearInterval(timer);
-          }, watermark)
-        }, 250);
+      var watermark
+      timer = setInterval(() => {
+        console.log("polling activities");
+        botclient.pollActivities(conversationId, (activity) => {
+          console.log("got activity: " + activity.text);
+          session.send(
+            new calling.PlayPromptAction(session)
+            .prompts([
+              new calling.Prompt(session)
+                .value(activity.text)
+                .culture("de-DE")
+            ])
+          );
+          clearInterval(timer);
+        }, watermark)
+      }, 500);
 
-      });
     }).catch(error => {
       console.log(error);
     })
