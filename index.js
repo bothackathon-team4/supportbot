@@ -95,25 +95,14 @@ callingBot.dialog("mainLoop", [
       botclient.sendActivity(conversationId, text);
       console.log("text was sent to chat bot - waiting for reply");
 
-      var poll = function(err, result) {
-        timer = setTimeout(() => {
-          console.log("polling activities");
+      setTimeout(() => {
+        console.log("polling activities");
 
-          botclient.pollActivities(conversationId, (activity) => {
-            console.log("got activity: " + activity.text);
-            result(null, activity.text)
-          }, watermark)
-        }, 5000);
-      }
-
-      var pollSync = synchronize(poll)
-      var result = null
-      synchronize.fiber(function() {
-        result = poll(null)
-      })
-      console.log("sync read: " + result)
-      question = result
-
+        botclient.pollActivities(conversationId, (activity) => {
+          console.log("got activity: " + activity.text);
+          question = activity.text
+        }, watermark)
+      }, 5000);
     }).catch(error => {
       console.log(error);
     })
