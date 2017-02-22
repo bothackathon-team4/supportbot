@@ -18,7 +18,8 @@
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "restify": "^4.3.0",
-    "swagger-client": "^2.1.32"
+    "swagger-client": "^2.1.32",
+    "synchronize": "^2.0.0"
   },
   "engines": {
     "node": "^7.5.0",

@@ -3,6 +3,7 @@ var calling = require('botbuilder-calling');
 var restify = require('restify');
 var speechService = require('./bingspeech.js');
 var botclient = require('./botclient.js');
+var synchronize = require('synchronize');
 
 //=========================================================
 // Bot Setup
@@ -47,6 +48,7 @@ chatBot.dialog('/', function (session) {
 // in the session - but this doesn't work right now...)
 var conversationIdGlobal = null
 var question = null
+var watermark = null
 
 // Add root dialog
 callingBot.dialog('/', [
@@ -93,32 +95,31 @@ callingBot.dialog("mainLoop", [
       botclient.sendActivity(conversationId, text);
       console.log("text was sent to chat bot - waiting for reply");
 
-      var watermark
-      timer = setInterval(() => {
-        console.log("polling activities");
+      var poll = function(err, result) {
+        timer = setTimeout(() => {
+          console.log("polling activities");
 
-        botclient.pollActivities(conversationId, (activity) => {
-          console.log("got activity: " + activity.text);
-          question = activity.text
-/*
-          session.send(
-            new calling.PlayPromptAction(session)
-            .prompts([
-              new calling.Prompt(session)
-                .value(activity.text)
-                .culture("de-DE")
-            ])
-          );
-*/
-          clearInterval(timer);
-        }, watermark)
+          botclient.pollActivities(conversationId, (activity) => {
+            console.log("got activity: " + activity.text);
+            result(null, activity.text)
+          }, watermark)
+        }, 5000);
+      }
 
-        session.replaceDialog("mainLoop")
-      }, 500);
+      var pollSync = synchronize(poll)
+      var result = null
+      synchronize.fiber(function() {
+        result = poll(null)
+      })
+      console.log("sync read: " + result)
+      question = result
 
     }).catch(error => {
       console.log(error);
     })
+  },
+  function (session) {
+    session.replaceDialog("mainLoop")
   }
 ]);
 
