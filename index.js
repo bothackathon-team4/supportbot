@@ -71,7 +71,7 @@ callingBot.dialog("mainLoop", [
       maxSilenceTimeoutInSeconds: 1
     });
   },
-  function (session, result) {
+  function (session, result, next) {
     //console.log(result.response);
     //called...{ recordedAudio: <Buffer 52 ... >, lengthOfRecordingInSecs: 7.2459999999999996 }
 
@@ -101,7 +101,8 @@ callingBot.dialog("mainLoop", [
         botclient.pollActivities(conversationId, (activity) => {
           console.log("got activity: " + activity.text);
           question = activity.text
-        }, watermark)
+          next()
+        })
       }, 5000);
     }).catch(error => {
       console.log(error);

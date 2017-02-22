@@ -48,7 +48,9 @@ exports.sendActivity = (conversationId, input) => {
     });
 }
 
-exports.pollActivities = (conversationId, action, watermark) => {
+var watermark = null
+
+exports.pollActivities = (conversationId, action) => {
   directLineClient.then((client) => {
     client.Conversations.Conversations_GetActivities({ conversationId: conversationId, watermark: watermark })
               .then((response) => {
@@ -61,8 +63,8 @@ exports.pollActivities = (conversationId, action, watermark) => {
                     activities = activities.filter((m) => m.from.id !== DIRECTLINE_CLIENT);
 
                     if (activities.length) {
-                        // print other messages
-                        activities.forEach(action);
+                        // call action on last activity
+                        action(activities[activities.length - 1]);
                     }
                 }
               });
